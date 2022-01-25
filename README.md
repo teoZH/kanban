@@ -1,2 +1,2 @@
 # kanban
-reworking old repo --- learnign_environment
+reworking old repo --- learning_environment
