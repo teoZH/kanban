@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SOME_LINKS</title>
+</head>
+<body>
+{% if user.is_authenticated %}
+    <h1>Hello {{ user.username }}</h1>
+    <h5><a href="{% url 'logout' %}">Log Me Out-Basic Django Auth</a></h5>
+    <h5><a href="{% url 'change_pass' %}">Change Password</a></h5>
+{% else %}
+    <h1>Hello anonymous!</h1>
+{% endif %}
+<h3><a href="{% url 'index_view' %}">Home page</a></h3>
+<h3><a href="{% url 'signIn' %}">Basic Login Django page</a></h3>
+<h3><a href="{% url 'register' %}">Basic Register Django page</a></h3>
+<h3><a href="api/auth/login/">Django Rest Basic Login Page</a></h3>
+</body>
+</html>
