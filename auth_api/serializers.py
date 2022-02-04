@@ -9,7 +9,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ('username', 'password', 'password2','email')
+        fields = ('username', 'password', 'password2', 'email')
 
     def validate(self, attrs):
         if attrs['password'] != 'password2':
@@ -22,3 +22,13 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+
+
+class UpdateUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        exclude = ['password', 'last_login', 'is_superuser',
+                   'is_staff', 'date_joined', 'user_permissions', 'groups', 'is_active']
+
+    def create(self, validated_data):
+        raise serializers.ValidationError('Not possible!')
