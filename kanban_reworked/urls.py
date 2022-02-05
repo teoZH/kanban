@@ -17,13 +17,12 @@ from django.contrib import admin
 from django.urls import path,include
 from rest_framework.routers import DefaultRouter
 
-router = DefaultRouter()
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('base_page_app.urls')),
     path('accounts/',include('accounts.urls')),
-    path('api/',include(router.urls)),
+    path('api/',include('base_api.urls')),
     path('api/accounts/',include('auth_api.urls'))
 ]
