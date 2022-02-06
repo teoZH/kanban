@@ -1,5 +1,6 @@
 from django.db import models
 from accounts.models import UserProfile
+from django.utils.timezone import now
 
 
 # Create your models here.
@@ -17,13 +18,13 @@ class Company(models.Model):
 
 
 class Todo(models.Model):
-    title = models.CharField(max_length=20, blank=False, unique_for_date='date')
-    description = models.TextField(max_length=500, blank=False)
-    date = models.DateTimeField(auto_now_add=True)
-    in_progress = models.BooleanField(default=False)
-    is_done = models.BooleanField(default=False)
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True)
+    title = models.CharField(max_length=20, blank=True, unique_for_date='date')
+    description = models.TextField(max_length=500, blank=True)
+    date = models.DateTimeField(blank=True,default=now())
+    in_progress = models.BooleanField(default=False,blank=True)
+    is_done = models.BooleanField(default=False,blank=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True,blank=True)
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True,blank=True)
 
     def __str__(self):
         return self.title

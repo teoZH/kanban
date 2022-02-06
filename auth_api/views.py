@@ -10,6 +10,7 @@ from .permissions import IsOwnerOrReadOnlyUser
 from .serializers import RegisterSerializer, UpdateUserSerializer
 from accounts.models import UserProfile
 from rest_framework.viewsets import GenericViewSet
+from django.contrib.auth import logout
 from rest_framework.mixins import UpdateModelMixin, ListModelMixin, RetrieveModelMixin
 
 
@@ -49,7 +50,9 @@ class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
-        self.request.user.auth_token.delete()
+        if self.request.user.auth_token:
+            self.request.user.auth_token.delete()
+        logout(request)
         return Response({'Message': 'Logout successful'}, status=status.HTTP_200_OK)
 
 

@@ -13,12 +13,15 @@ class CompanySerializer(serializers.ModelSerializer):
 
 
 class TodoSerializer(serializers.ModelSerializer):
-    company = serializers.SlugRelatedField(read_only=True, slug_field='title')
-    user = serializers.SlugRelatedField(read_only=True, slug_field='username')
+    company_name = serializers.SlugRelatedField(slug_field='title',source='company', read_only=True)
+    username = serializers.SlugRelatedField(slug_field='username',source='user', read_only=True)
 
     class Meta:
         model = Todo
         fields = '__all__'
+        extra_kwargs = {'company': {'write_only': True},
+                        'user': {'write_only':True}}
+
 
 
 class NotesSerializer(serializers.ModelSerializer):

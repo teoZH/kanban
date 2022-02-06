@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'base_api',
     'auth_api',
     'base_page_app',
-    'accounts'
 ]
 
 MIDDLEWARE = [
@@ -139,13 +138,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 AUTH_USER_MODEL = 'accounts.UserProfile'
 
-
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES' : [
+    'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.TokenAuthentication'
     ]
 }
-
 
 EMAIL_FILE_PATH = str(BASE_DIR.joinpath('sent_emails'))
