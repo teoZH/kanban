@@ -1,5 +1,5 @@
 from django.db import models
-from accounts.models import UserProfile
+from auth_api.models import UserProfile
 from django.utils.timezone import now
 
 

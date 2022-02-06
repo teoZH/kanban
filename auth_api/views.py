@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsOwnerOrReadOnlyUser
 from .serializers import RegisterSerializer, UpdateUserSerializer
-from accounts.models import UserProfile
+from .models import UserProfile
 from rest_framework.viewsets import GenericViewSet
 from django.contrib.auth import logout
 from rest_framework.mixins import UpdateModelMixin, ListModelMixin, RetrieveModelMixin

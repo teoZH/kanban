@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from accounts.models import UserProfile
+from auth_api.models import UserProfile
 from django.contrib.auth.password_validation import validate_password
 
 
