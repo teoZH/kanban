@@ -1,8 +1,8 @@
 from rest_framework.viewsets import ModelViewSet
 from base_page_app.models import Company, Todo, Notes
-from .serializers import CompanySerializer, TodoSerializer
+from .serializers import CompanySerializer, TodoSerializer, NoteSerializer
 from rest_framework.permissions import IsAuthenticated
-from .permissions import IsOwnerOrReadOnlyUser, IsOwnerOrReadOnlyTodo
+from .permissions import IsOwnerOrReadOnlyUser, IsOwnerOrReadOnlyObject
 
 
 class CompanyViewSet(ModelViewSet):
@@ -20,7 +20,7 @@ class CompanyViewSet(ModelViewSet):
 class TodoViewSet(ModelViewSet):
     queryset = Todo.objects.all()
     serializer_class = TodoSerializer
-    permission_classes = [IsAuthenticated, IsOwnerOrReadOnlyTodo]
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnlyObject]
 
     def _validate_company(self, serializer):
         try:
@@ -41,3 +41,15 @@ class TodoViewSet(ModelViewSet):
     def perform_update(self, serializer):
         serializer = self._validate_company(serializer)
         return super().perform_update(serializer)
+
+
+class NotesViewSet(ModelViewSet):
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnlyObject]
+    serializer_class = NoteSerializer
+    queryset = Notes.objects.all()
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save(user=self.request.user)
