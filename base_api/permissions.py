@@ -19,3 +19,15 @@ class IsOwnerOrReadOnlyObject(permissions.BasePermission):
 
         return obj.user == request.user
 
+
+class IsOwnerOrReadOnlyTodo(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        if request.method in ["DELETE"]:
+            if obj.company:
+                return obj.company.creator == request.user
+        return obj.user == request.user
+
+
+#request user if owner of company can change everything
+#request user if not owner of company can change only in progress
