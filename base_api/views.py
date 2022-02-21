@@ -5,7 +5,6 @@ from .serializers import CompanySerializer, TodoSerializer, NoteSerializer
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsOwnerOrReadOnlyUser, IsOwnerOrReadOnlyObject, IsOwnerOrReadOnlyTodo
 from rest_framework import exceptions
-from django.core.exceptions import ObjectDoesNotExist
 
 
 class CompanyViewSet(ModelViewSet):
@@ -69,8 +68,29 @@ class NotesViewSet(ModelViewSet):
     serializer_class = NoteSerializer
     queryset = Notes.objects.all()
 
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user)
+
+    def __validate_todo(self, serializer):
+        todo = serializer.validated_data.get('todo', None)
+        if not todo:
+            raise exceptions.PermissionDenied()
+        if todo.company:
+            if not (todo.company.creator == self.request.user or todo.user == self.request.user):
+                raise exceptions.PermissionDenied()
+        else:
+            if self.request.user != todo.user:
+                raise exceptions.PermissionDenied()
+        return serializer
+
     def perform_create(self, serializer):
+        serializer = self.__validate_todo(serializer)
         serializer.save(user=self.request.user)
 
     def perform_update(self, serializer):
+        serializer = self.__validate_todo(serializer)
         serializer.save(user=self.request.user)
+
+# TODO should add filters too that would allow user too see notes of todos that are joint
+# ex. boss and worker can see notes of A jointtodo
+# TODO add some filters???? should decide what kind of ??
