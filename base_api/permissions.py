@@ -1,5 +1,5 @@
 from rest_framework import permissions
-from base_page_app.models import Todo, Company, Notes
+
 
 
 class IsOwnerOrReadOnlyUser(permissions.BasePermission):

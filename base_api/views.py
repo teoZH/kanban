@@ -5,6 +5,7 @@ from .serializers import CompanySerializer, TodoSerializer, NoteSerializer
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsOwnerOrReadOnlyUser, IsOwnerOrReadOnlyObject, IsOwnerOrReadOnlyTodo
 from rest_framework import exceptions
+from .filters import CompanyTodoNotesFilter
 
 
 class CompanyViewSet(ModelViewSet):
@@ -16,7 +17,7 @@ class CompanyViewSet(ModelViewSet):
         serializer.save(creator=self.request.user)
 
     def get_queryset(self):
-        return self.queryset.filter(creator=self.request.user)
+        return self.queryset.filter(Q(creator=self.request.user) | Q(employee=self.request.user))
 
 
 class TodoViewSet(ModelViewSet):
@@ -35,12 +36,12 @@ class TodoViewSet(ModelViewSet):
             serializer.validated_data['user'] = self.request.user
         if user and company:
             if not user in company.employee.all() and user != company.creator:
-                raise exceptions.PermissionDenied()
+                raise exceptions.NotFound()
         if not company is None and not company in user_companies and self.request.method == 'POST':
-            raise exceptions.PermissionDenied()
+            raise exceptions.NotFound()
         if not company and user:
             if self.request.user != user:
-                raise exceptions.PermissionDenied()
+                raise exceptions.NotFound()
         return serializer
 
     def _validate_company(self, serializer):
@@ -49,9 +50,9 @@ class TodoViewSet(ModelViewSet):
         company = serializer.validated_data.get('company', None)
         if company and todo.company:
             if company.creator != todo.company.creator and self.request.user != todo.company.creator:
-                raise exceptions.PermissionDenied()
+                raise exceptions.NotFound()
             if self.request.user != todo.company.creator and serializer.validated_data['user'] != todo.user:
-                raise exceptions.PermissionDenied()
+                raise exceptions.NotFound()
         return serializer
 
     def perform_create(self, serializer):
@@ -67,20 +68,22 @@ class NotesViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnlyObject]
     serializer_class = NoteSerializer
     queryset = Notes.objects.all()
+    filterset_class = CompanyTodoNotesFilter
 
     def get_queryset(self):
-        return self.queryset.filter(user=self.request.user)
+        return self.queryset.filter((Q(user=self.request.user) | Q(todo__company__in=self.request.user.employee.all())))
 
     def __validate_todo(self, serializer):
         todo = serializer.validated_data.get('todo', None)
         if not todo:
-            raise exceptions.PermissionDenied()
+            raise exceptions.NotFound()
+
         if todo.company:
             if not (todo.company.creator == self.request.user or todo.user == self.request.user):
-                raise exceptions.PermissionDenied()
+                raise exceptions.NotFound()
         else:
             if self.request.user != todo.user:
-                raise exceptions.PermissionDenied()
+                raise exceptions.NotFound()
         return serializer
 
     def perform_create(self, serializer):
