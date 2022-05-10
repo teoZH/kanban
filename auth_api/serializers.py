@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from accounts.models import UserProfile
+from auth_api.models import UserProfile
 from django.contrib.auth.password_validation import validate_password
 
 
@@ -12,7 +12,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = ('username', 'password', 'password2', 'email')
 
     def validate(self, attrs):
-        if attrs['password'] != 'password2':
+        if attrs['password'] != attrs['password2']:
             raise serializers.ValidationError({'error': "Password fields do not match"})
         return attrs
 
